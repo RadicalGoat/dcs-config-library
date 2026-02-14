@@ -1,0 +1,19 @@
+# Secrets
+.secrets
+
+# Environment variables
+.env
+.env.local
+
+# python cache files
+__pycache__/
+
+# python virtual environment
+.venv/
+.venv-wsl/
+.python_packages/
+
+# Scratch files
+scratch/
+
+
