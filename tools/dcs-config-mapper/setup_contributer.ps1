@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
-# DPM-006: DCS Config Repo Sync Tool (Secure Version)
-# Description: Pulls or clones the DCS-Unified-Repo using a local secrets file.
+# DCS Config Repo Update Tool (Secure Version)
+# Description: Pushed changes to the DCS-Unified-Repo using a local secrets file.
 # ---------------------------------------------------------------------------
 
 # --- CONFIGURATION ---
@@ -17,7 +17,7 @@ param (
 $RepoUrl    = "https://github.com/__REPOUSER__/__REPO_NAME__.git"
 $RootDir    = "C:\Utils\dcs-config-manager" # Assumed context from previous turns
 $TargetDir  = Join-Path $RootDir "dcs-config-library-repo"
-$SecretFile = Join-Path $RootDir ".secrets-dcs-library-readonly"
+$SecretFile = Join-Path $RootDir ".secrets-dcs-library-readwrite"
 
 # --- DEBUG BLOCK: Configuration State ---
 if ($Debug) {
@@ -50,36 +50,5 @@ $AuthRepoUrl = $RepoUrl.Replace("https://", "https://$($GithubToken.Trim())@")
 
 if ($Debug) {
     Write-Host "Built Auth URL:   $AuthRepoUrl"
-    Write-Host "------------------`n"
 }
 
-# 3. Execute Git Sync
-if (!(Test-Path -Path $TargetDir)) {
-    Write-Host "Initial Setup: Cloning repo to $TargetDir..." -ForegroundColor Cyan
-    if ($Debug) {
-        git clone $AuthRepoUrl $TargetDir  # Shows standard output
-    } else {
-        git clone $AuthRepoUrl $TargetDir --quiet 2>&1 | Out-Null
-    }
-} else {
-    Write-Host "Syncing repo at $TargetDir..." -ForegroundColor Yellow
-    Push-Location $TargetDir
-    
-    if ($Debug) {
-        Write-Host "Running git fetch..."
-        git fetch --all
-        Write-Host "Running git reset..."
-        git reset --hard origin/main 
-    } else {
-        git fetch --all --quiet 2>&1 | Out-Null
-        git reset --hard origin/main --quiet 2>&1 | Out-Null
-    }
-    
-    Pop-Location
-}
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "SUCCESS: Repository is up to date." -ForegroundColor Green
-} else {
-    Write-Error "FAILURE: Git command failed. Check your token or network."
-}

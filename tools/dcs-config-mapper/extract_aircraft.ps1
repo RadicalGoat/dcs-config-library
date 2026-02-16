@@ -15,7 +15,7 @@ $PythonExe     = "python"
 # $SaveRoot      = "<location of DCS Saved Games on the user's machine>"
 
 $RepoPath      = "C:\Utils\dcs-config-manager\dcs-config-library-repo"
-$SaveRoot      = "~\Saved Games\DCS"
+$SaveRoot      = Join-Path $env:USERPROFILE "Saved Games\DCS"
 
 # Construct paths for templates and script
 $RepoTemplates = Join-Path $RepoPath "data\templates"

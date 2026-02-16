@@ -15,7 +15,7 @@ $PythonExe = "python"
 # $SaveRoot      = "<location of DCS Saved Games on the user's machine>"
 
 $RepoPath      = "C:\Utils\dcs-config-manager\dcs-config-library-repo"
-$SaveRoot      = "~\Saved Games\DCS"
+$SaveRoot      = Join-Path $env:USERPROFILE "Saved Games\DCS"
 
 # Construct repository sub-paths
 $RepoTemplates = Join-Path $RepoPath "data\templates"
@@ -23,8 +23,7 @@ $RepoFprints   = Join-Path $RepoPath "data\fingerprints"
 $ScriptPath    = Join-Path $RepoPath "tools\dcs-config-mapper\restore_config.py"
 
 # Auto-detect local hostname
-#$LocalHostname = $env:COMPUTERNAME
-$LocalHostname = "uas-sim1"
+$LocalHostname = $env:COMPUTERNAME
 
 # Verify the Python script exists
 if (!(Test-Path $ScriptPath)) {
