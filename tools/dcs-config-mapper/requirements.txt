@@ -1,4 +1,0 @@
-# Python packages
-
-pytest
-pytest-mock
