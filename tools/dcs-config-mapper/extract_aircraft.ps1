@@ -14,8 +14,8 @@ $PythonExe     = "python"
 # $RepoPath      = "<location of DCS repo cloned to users machine>"
 # $SaveRoot      = "<location of DCS Saved Games on the user's machine>"
 
-$RepoPath      = ".\test\dummy-filesystem\utils\dcs-config-manager\dcs-config-repo"
-$SaveRoot      = ".\test\dummy-filesystem\dcs\source\uas\Saved Games\DCS"
+$RepoPath      = ""
+$SaveRoot      = ""
 
 # Construct paths for templates and script
 $RepoTemplates = Join-Path $RepoPath "data\templates"
