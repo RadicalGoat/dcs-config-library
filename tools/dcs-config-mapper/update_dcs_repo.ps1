@@ -14,7 +14,7 @@ param (
 )
 
 # --- CONFIGURATION ---
-$RepoUrl    = "https://github.com/__REPOUSER__/__REPO_NAME__.git"
+$RepoUrl    = "https://github.com/RadicalGoat/dcs-config-library.git"
 $RootDir    = "C:\Utils\dcs-config-manager" # Assumed context from previous turns
 $TargetDir  = Join-Path $RootDir "dcs-config-library-repo"
 $SecretFile = Join-Path $RootDir ".secrets-dcs-library-readonly"
