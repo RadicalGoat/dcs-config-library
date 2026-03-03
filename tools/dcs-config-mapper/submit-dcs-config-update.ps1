@@ -50,28 +50,74 @@ if ($LocalCommits -eq 0) {
 
 Write-Host "$LocalCommits local commit(s) detected."
 
+# --- USER INPUT ------------------------------------------------------------
+
+# Prompt for user's name
+$UserName = Read-Host "Enter your name"
+
+if ([string]::IsNullOrWhiteSpace($UserName)) {
+    Write-Error "Name cannot be empty. Exiting."
+    exit 1
+}
+
+# Prompt for one-line summary
+$Summary = Read-Host "Enter a one-line summary of this configuration update"
+
+if ([string]::IsNullOrWhiteSpace($Summary)) {
+    Write-Error "Summary cannot be empty. Exiting."
+    exit 1
+}
+
+# Trim and normalise
+$UserName = $UserName.Trim()
+$Summary  = $Summary.Trim()
 # Generate patch content
-$Patch = git format-patch origin/$Branch --stdout
+$PatchBytes = git format-patch origin/$Branch --stdout | Out-String
+$PatchBase64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($PatchBytes))
+
+# Temporary patch output
+$FilenameDateStamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$FilenameUserName = $UserName -replace '\s+', '_'
+$PatchBase64 | Set-Content "C:\Utils\dcs-config-manager\${FileNameUserName}-${FilenameDateStamp}.patch" -NoNewline
 
 # Build issue title
 $MachineName = $env:COMPUTERNAME
 $DateStamp   = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$Title = "Config Update Request from $MachineName ($DateStamp)"
+$Title = "Config Update: $Summary ($MachineName - $DateStamp)"
 
 # Build issue body
 $Body = @"
-A configuration update has been submitted from machine: **$MachineName**
+A configuration update has been submitted.
+
+**Submitted by:** $UserName  
+**Machine:** $MachineName  
+**Date:** $DateStamp
+
+---
+
+### Summary
+$Summary
+
+---
 
 Number of commits: **$LocalCommits**
 
 ---
 
-### Patch
+### Patch (Base64 Encoded)
 
-\`\`\`diff
-$Patch
-\`\`\`
+To apply:
+
+1. Copy the base64 text below to a file called patch.b64
+2. Run:
+   certutil -decode patch.b64 patch.patch
+3. Apply:
+   git am patch.patch
+
+---
+
+$PatchBase64
 
 ---
 Generated automatically by DCS Config Sync.
@@ -88,6 +134,15 @@ $Headers = @{
     Authorization = "Bearer $GithubToken"
     Accept        = "application/vnd.github+json"
     "User-Agent"  = "DCS-Config-Script"
+}
+
+if ($Debug) {
+    Write-Host "Following items to be used to created GitHub issue:"
+    Write-Host "Title: $Title"
+    Write-Host "Body: $Body"
+    Write-Host "Headers: $($Headers | Out-String)"
+    Write-Host "Payload: $Payload"
+    Write-Host "API URL: $ApiUrl"
 }
 
 Write-Host "Creating GitHub issue..."
